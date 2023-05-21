@@ -1,0 +1,44 @@
+---
+- hosts: devserver
+  become: yes
+  ignore_errors: yes
+         Tasks:
+           - name: install package
+             package:
+              name: "{{ item }}"
+               state: present
+                with_items:
+               - unzip
+               - wget
+               - httpd
+           - name: Download application code
+            get_url:
+             url: https://github.com/utrains/static-resume/archive/refs/heads/main.zip
+              dest: /tmp/main.zip
+
+          - name: Unzip application code
+            unarchive:
+             src: /tmp/main.zip
+              dest: /tmp
+
+          - name: Copy application files to document root
+            synchronize:
+             src: /tmp/static-resume-main/iPortfolio/
+              dest: /var/www/html/
+               delete: yes
+
+          - name: Start Apache HTTP Server
+            service:
+             name: httpd
+              state: started
+               enabled: true
+
+          - name: Check if application is accessible
+            uri:
+             url: http://{{ ansible_host }}
+              return_content: yes
+               register: response
+
+          - name: Display application status
+            debug:
+             msg: "Application is {{ 'up' if response.status == 200 else 'down' }}"

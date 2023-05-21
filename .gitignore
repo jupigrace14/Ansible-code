@@ -1,0 +1,11 @@
+ .bash_history
+        .bash_logout
+        .bash_profile
+        .bashrc
+        .playbook.yml.swo
+        .ssh/
+        .viminfo
+        ansible.log
+        keypair.pem
+       .gitignore
+
